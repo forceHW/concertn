@@ -23,7 +23,7 @@ public class Events {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="bands_id")
+    @JoinColumn(name="band_id")
     private Bands band;
 
     @Column(name="likes",nullable = false)

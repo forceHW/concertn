@@ -28,7 +28,7 @@ public class Bands {
 
     //TODO: how do we add images for s3?
 
-    @OneToMany(mappedBy = "bands", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "band", cascade = CascadeType.ALL)
     private List<Events> events = new ArrayList<>();
 
 }
