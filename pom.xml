@@ -29,6 +29,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring-ai.version>2.0.1</spring-ai.version>
+		<jsoup.version>1.23.2</jsoup.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -94,7 +95,7 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.23.2</version>
+			<version>${jsoup.version}</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
