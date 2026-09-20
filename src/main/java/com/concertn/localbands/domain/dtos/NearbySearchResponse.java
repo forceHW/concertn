@@ -1,4 +1,4 @@
-package com.concertn.localbands.services.dto.google;
+package com.concertn.localbands.domain.dtos;
 
 import java.util.List;
 
@@ -14,7 +14,9 @@ public record NearbySearchResponse(List<Place> places) {
             DisplayName displayName,
             String formattedAddress,
             Location location,
-            List<String> types
+            List<String> types,
+            Boolean liveMusic,
+            String websiteUri
     ) {}
 
     public record DisplayName(String text, String languageCode) {}

@@ -1,6 +1,6 @@
 package com.concertn.localbands.services;
 
-import com.concertn.localbands.services.dto.google.NearbySearchResponse;
+import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 
 import java.util.List;
 

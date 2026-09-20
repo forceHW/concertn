@@ -1,4 +1,4 @@
-package com.concertn.localbands.domain;
+package com.concertn.localbands.domain.entities;
 
 
 import jakarta.persistence.*;

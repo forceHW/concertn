@@ -1,8 +1,8 @@
 package com.concertn.localbands.services.impl;
 
 import com.concertn.localbands.services.NearbyPlacesService;
-import com.concertn.localbands.services.dto.google.NearbySearchRequest;
-import com.concertn.localbands.services.dto.google.NearbySearchResponse;
+import com.concertn.localbands.domain.dtos.NearbySearchRequest;
+import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -21,11 +21,14 @@ public class NearbyPlacesImpl implements NearbyPlacesService {
             "places.displayName",
             "places.formattedAddress",
             "places.location",
-            "places.types"
+            "places.types",
+            "places.liveMusic",
+            "places.websiteUri"
     );
 
     // Adjust to the venue types you actually care about surfacing.
-    private static final List<String> VENUE_TYPES = List.of("bar", "night_club", "concert_hall");
+    private static final List<String> VENUE_TYPES = List.of("concert_hall");
+
 
     private static final int MAX_RESULTS = 20;
 
@@ -36,7 +39,7 @@ public class NearbyPlacesImpl implements NearbyPlacesService {
         NearbySearchRequest request = new NearbySearchRequest(
                 VENUE_TYPES,
                 MAX_RESULTS,
-                new NearbySearchRequest.LocationRestriction(
+                new NearbySearchRequest. LocationRestriction(
                         new NearbySearchRequest.Circle(
                                 new NearbySearchRequest.Center(latitude, longitude),
                                 radiusMeters

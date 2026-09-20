@@ -1,4 +1,4 @@
-package com.concertn.localbands.services.dto.google;
+package com.concertn.localbands.domain.dtos;
 
 import java.util.List;
 
