@@ -5,16 +5,6 @@ Input: will be a venue/locations name and website url requesting you to provide 
 Output:
 Return a List of the events object dto, "AiEventResponseDto", that correspond to the listed events from the provided website.
 
-The "AiEventResponseDto" object looks like the following:
-public class AIEventResponseDto {
-    private String eventName;
-    private List<String> bandName;
-    private String formatedString;
-    private LocalDateTime date;
-    private LocalDateTime doorsOpen;
-}
-
-
 Rules:
 - Use only information present in the provided text. Never guess or invent
   events, dates, times, or bands.
