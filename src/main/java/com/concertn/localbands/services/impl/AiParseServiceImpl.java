@@ -1,11 +1,18 @@
 package com.concertn.localbands.services.impl;
 
+import com.concertn.localbands.domain.dtos.AIEventResponseDto;
 import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 import com.concertn.localbands.services.AiParseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 
 @Service
@@ -16,10 +23,22 @@ public class AiParseServiceImpl implements AiParseService {
 
 
     @Override
-    public Boolean ParsePlaces(NearbySearchResponse nearbySearchResponse) {
+    public AIEventResponseDto ParsePlaces(NearbySearchResponse.Place place) {
         PromptTemplate promptTemplate = new PromptTemplate("Can you give me events at {name}, the website is {website}");
 
 
-//        resp = this.chatClient.prompt()
+        Prompt prompt = new Prompt(
+                promptTemplate.create(Map.of(
+                        "name", place.displayName(),
+                        "website", place.websiteUri())).getInstructions(),
+                OpenAiChatOptions.builder()
+                        .model("gpt-5.6-luna")
+                        .maxTokens(5000)
+                        .build()
+        );
+
+        return venueParseClient.prompt(prompt)
+                .call()
+                .entity(AIEventResponseDto.class);
     }
 }

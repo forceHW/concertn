@@ -36,6 +36,9 @@ public class Events {
     @Column(name="longitude")
     private double longitude;
 
+    @Column(name="address")
+    private String formattedAddress;
+
     //TODO: data for storing promotion pictures?
 
     @Column(name="date", nullable = false)
