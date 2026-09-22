@@ -32,8 +32,7 @@ public class AiParseServiceImpl implements AiParseService {
                         "name", place.displayName(),
                         "website", place.websiteUri())).getInstructions(),
                 OpenAiChatOptions.builder()
-                        .model("gpt-5.6-luna")
-                        .maxTokens(5000)
+                        .maxCompletionTokens(5000)
                         .build()
         );
 

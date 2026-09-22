@@ -21,7 +21,5 @@ public class JsoupServiceImpl implements JsoupService {
             throw new RuntimeException(e);
         }
 
-
-
     }
 }
