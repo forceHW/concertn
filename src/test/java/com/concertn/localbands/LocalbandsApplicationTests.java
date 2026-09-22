@@ -44,7 +44,7 @@ class LocalbandsApplicationTests {
 		NearbySearchResponse.Place argAi = places.getFirst();
 
 		List<AIEventResponseDto> resp = aiParseService.ParsePlaces(argAi);
-		System.out.println("GP + Luna" + resp);
+		System.out.println("GP + Luna " + resp);
 		assertNotNull(resp);
 	}
 }

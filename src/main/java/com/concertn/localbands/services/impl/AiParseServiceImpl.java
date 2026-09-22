@@ -3,6 +3,7 @@ package com.concertn.localbands.services.impl;
 import com.concertn.localbands.domain.dtos.AIEventResponseDto;
 import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 import com.concertn.localbands.services.AiParseService;
+import com.concertn.localbands.tools.EventAiTools;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.Message;
@@ -38,7 +39,11 @@ public class AiParseServiceImpl implements AiParseService {
         );
 
         return venueParseClient.prompt(prompt)
+                .tools(new EventAiTools())
                 .call()
                 .entity(new ParameterizedTypeReference<List<AIEventResponseDto>>() {});
+
+
+//        TODO: give prompt the jsoup tool
     }
 }
