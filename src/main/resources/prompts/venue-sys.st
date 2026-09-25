@@ -15,6 +15,7 @@ Rules:
   events, dates, times, or bands.
 - Return only events that have not yet happened. Ignore past events, ticket
   policies, and general venue info.
+- Format all dates and times as ISO-8601: yyyy-MM-dd'T'HH:mm:ss (e.g. 2026-11-15T19:30:00)
 - If a field (such as time or price) is not stated, leave it null.
 - The bandName field has been specified as a List<String> in the case of multiple bands being present, if there is only one just provide the one in the list
 - If the page contains no events, return an empty list.

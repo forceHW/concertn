@@ -41,7 +41,7 @@ class LocalbandsApplicationTests {
 //		used to test the ai
 		List<NearbySearchResponse.Place> places = nearbyPlacesService.findNearbyVenues(39.298163, -76.600091,35000);
 
-		NearbySearchResponse.Place argAi = places.getFirst();
+		NearbySearchResponse.Place argAi = places.get(1);
 
 		List<AIEventResponseDto> resp = aiParseService.ParsePlaces(argAi);
 		System.out.println("GP + Luna " + resp);
