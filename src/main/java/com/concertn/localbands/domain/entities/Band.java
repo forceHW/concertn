@@ -17,7 +17,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Bands {
+public class Band {
 
     @Id
     @Column(name="id",nullable = false,updatable = false)

@@ -24,7 +24,7 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="band_id")
-    private Bands band;
+    private Band band;
 
     @Column(name="likes",nullable = false)
     private Integer likes = 0;
