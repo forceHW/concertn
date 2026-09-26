@@ -26,8 +26,14 @@ public class AiParseServiceImpl implements AiParseService {
     private final ChatClient venueParseClient;
 
 
+    /**
+     * Uses Ai Agent to parse out events from a website of a venue
+     *
+     * @param place The dto object that receives data of an object, we use to grab the name and website of a venue
+     * @return We return a list of events from the given websites
+     */
     @Override
-    public List<AIEventResponseDto> ParsePlaces(NearbySearchResponse.Place place) {
+    public List<AIEventResponseDto> ParseByPlace(NearbySearchResponse.Place place) {
         PromptTemplate promptTemplate = new PromptTemplate("Can you give me events at {name}, the website is {website}");
 
         Prompt prompt = new Prompt(

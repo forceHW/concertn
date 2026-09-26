@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface AiParseService {
 
-    public List<AIEventResponseDto> ParsePlaces(NearbySearchResponse.Place place);
+    public List<AIEventResponseDto> ParseByPlace(NearbySearchResponse.Place place);
 }

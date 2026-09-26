@@ -4,7 +4,6 @@ import com.concertn.localbands.domain.dtos.AIEventResponseDto;
 import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 import com.concertn.localbands.services.AiParseService;
 import com.concertn.localbands.services.NearbyPlacesService;
-import com.concertn.localbands.services.impl.AiParseServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +42,7 @@ class LocalbandsApplicationTests {
 
 		NearbySearchResponse.Place argAi = places.get(1);
 
-		List<AIEventResponseDto> resp = aiParseService.ParsePlaces(argAi);
+		List<AIEventResponseDto> resp = aiParseService.ParseByPlace(argAi);
 		System.out.println("GP + Luna " + resp);
 		assertNotNull(resp);
 	}
