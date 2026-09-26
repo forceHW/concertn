@@ -1,10 +1,7 @@
 package com.concertn.localbands.domain.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,12 +12,16 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="id",nullable = false,updatable = false)
     private UUID id;
+
+    @Column(name = "name", nullable = false)
+    private String event_name;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="band_id")

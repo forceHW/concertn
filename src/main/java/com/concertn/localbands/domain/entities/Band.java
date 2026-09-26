@@ -2,10 +2,7 @@ package com.concertn.localbands.domain.entities;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +22,9 @@ public class Band {
 
     @Column(name="band_name",nullable = false)
     private String band_name;
+
+    @Column(name="normalized_name",nullable = false)
+    private String normalized_name;
 
     //TODO: how do we add images for s3?
 
