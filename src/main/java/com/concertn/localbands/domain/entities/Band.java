@@ -14,9 +14,11 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Band {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="id",nullable = false,updatable = false)
     private UUID id;
 
@@ -24,11 +26,17 @@ public class Band {
     private String band_name;
 
     @Column(name="normalized_name",nullable = false)
-    private String normalized_name;
+    private String normalizedName;
 
     //TODO: how do we add images for s3?
 
-    @OneToMany(mappedBy = "band", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(
+            name = "band_events",
+            joinColumns = @JoinColumn(name = "band_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    @Builder.Default
     private List<Event> events = new ArrayList<>();
 
 }

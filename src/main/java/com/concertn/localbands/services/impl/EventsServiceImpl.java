@@ -9,14 +9,13 @@ import com.concertn.localbands.repositories.EventRepository;
 import com.concertn.localbands.services.AiParseService;
 import com.concertn.localbands.services.EventsService;
 import com.concertn.localbands.services.NearbyPlacesService;
-import com.concertn.localbands.tools.EventAiTools;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
-import static java.util.Arrays.stream;
+import java.util.Optional;
 
 
 @Service
@@ -29,6 +28,7 @@ public class EventsServiceImpl implements EventsService {
     private final BandRepository bandRepository;
 
     @Override
+    @Transactional
     public Page<Event> fetchEventsByLocation(double latitude, double longitude, double radiusMeters) {
         List<NearbySearchResponse.Place> places = nearbyPlacesService.findNearbyVenues(latitude,longitude,radiusMeters);
 
@@ -37,33 +37,68 @@ public class EventsServiceImpl implements EventsService {
                 aiParseService::ParseByPlace
         ).toList();
 
-        //save it?
+
+        List<Event> allEvents = events.stream().flatMap(
+                eventsOfPlace -> {
+                    //what do i want to do with all the events in one place?
+                    return eventsOfPlace.stream().map(eventToAdd -> {
+                        //what do i want to do with a event
+                        //lookup/create for all the given bands (each dto has a list of artists)
+                        List<Band> bandsToAdd = eventToAdd.getBandName().stream().map(newBand -> {   // This creates all the bands in a event dto
+                                    Optional<Band> getBand = bandRepository.findByNormalizedName(normalizeText(newBand));
+                                    return Optional.of(getBand).orElseThrow().orElse(createBand(newBand, eventToAdd));
+                                }
+
+                        ).toList();
+                        //now create the event
+                        return createEvent(eventToAdd,bandsToAdd,latitude,longitude);
+                            }
 
 
+                    );
+                }
 
 
-        return null;
+        ).toList();
+
+        return new PageImpl<>(allEvents);
     }
 
-    private void saveEvent(AIEventResponseDto aiEventResponseDto){
+    private Event createEvent(AIEventResponseDto aiEventResponseDto, List<Band> bands, double latitude, double longitude){
         Event event = Event.builder()
                 .event_name(aiEventResponseDto.getEventName())
+                .bands(bands)
+                .latitude(latitude)
+                .longitude(longitude)
+//                TODO: Formated Address?
+//                TODO: Image S3?
                 .date(aiEventResponseDto.getDate())
                 .doorsOpen(aiEventResponseDto.getDoorsOpen())
 
+
                                 .build();
 
+        return eventRepository.save(event);
+    }
 
-      /**TODO: do check for band if it exists or nah, if no create a new one and save it into band repo
-       *
-       * , finish this function, double check id gen
-        how can i set lat and long,
-       create a priv function for normalized band name
+    private Band createBand(String bandName, AIEventResponseDto aiEventResponseDto){
+        Band band = Band.builder()
+                .band_name(bandName)
+                .normalizedName(normalizeText(bandName))
+                .build();
 
-        */
+        return bandRepository.save(band);
+    }
 
-//                .band(aiEventResponseDto.getBandName())
-//                .date(aiEventResponseDto.getDate())
-//                .doorsOpen();
+
+    /**
+     * Removes all white text and makes all the letters lowercase
+     * We use this to store band names for lookups
+     * By using the normalized text, we are able to minimize errors when looking up and saving events of the same band
+     * @param text input text
+     * @return normalized text
+     */
+    private String normalizeText(String text){
+        return text.toLowerCase().replaceAll("\\s+", "");
     }
 }

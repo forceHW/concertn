@@ -18,6 +18,7 @@ Rules:
 - Format all dates and times as ISO-8601: yyyy-MM-dd'T'HH:mm:ss (e.g. 2026-11-15T19:30:00)
 - If a field (such as time or price) is not stated, leave it null.
 - The bandName field has been specified as a List<String> in the case of multiple bands being present, if there is only one just provide the one in the list
+- Do not include the name of the event in the bandNames list
 - If the page contains no events, return an empty list.
 - If a date has no year, assume the nearest upcoming occurrence.
-- You may only call on the jsoup tool at a maximum of 5 times per prompt, if you fail to find the events or cannot find it within domain
+- If you fail to find the events or cannot find it within domain, you may only call on the jsoup tool at a maximum of 5 times per prompt, if you still fail to gather the information, return the arguements all as null

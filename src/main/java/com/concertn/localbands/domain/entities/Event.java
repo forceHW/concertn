@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,11 +25,12 @@ public class Event {
     @Column(name = "name", nullable = false)
     private String event_name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="band_id")
-    private Band band;
+    @ManyToMany(mappedBy = "events")
+    @Builder.Default
+    private List<Band> bands = new ArrayList<>();
 
     @Column(name="likes",nullable = false)
+    @Builder.Default
     private Integer likes = 0;
 
     //Location:

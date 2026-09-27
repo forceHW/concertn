@@ -1,7 +1,11 @@
 package com.concertn.localbands.repositories;
 
+import com.concertn.localbands.domain.entities.Event;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
-public interface EventRepository {
+public interface EventRepository extends JpaRepository<Event, UUID> {
 }
