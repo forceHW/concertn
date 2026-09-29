@@ -38,7 +38,7 @@ public class EventAiTools {
     @Tool(description = "Get the Document Object of a given website")
     public Document fetchJsoupDocument(String url) throws IOException {
         try {
-            return (Document) Jsoup.connect(url)
+            return Jsoup.connect(url)
                     .header("Accept-Encoding", "identity")
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
                     .timeout(10_000)

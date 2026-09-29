@@ -37,10 +37,13 @@ public class EventsServiceImpl implements EventsService {
                 aiParseService::ParseByPlace
         ).toList();
 
+        //TODO: exception handling here: when the returned nested var "events" is null
 
         List<Event> allEvents = events.stream().flatMap(
                 eventsOfPlace -> {
                     //what do i want to do with all the events in one place?
+
+                    //TODO: exception handling for when a dto is null and or list<dto> is null?
                     return eventsOfPlace.stream().map(eventToAdd -> {
                         //what do i want to do with a event
                         //lookup/create for all the given bands (each dto has a list of artists)

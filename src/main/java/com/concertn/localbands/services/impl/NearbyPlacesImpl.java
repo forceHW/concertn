@@ -1,5 +1,6 @@
 package com.concertn.localbands.services.impl;
 
+import com.concertn.localbands.exceptions.PlacesNotFoundException;
 import com.concertn.localbands.services.NearbyPlacesService;
 import com.concertn.localbands.domain.dtos.NearbySearchRequest;
 import com.concertn.localbands.domain.dtos.NearbySearchResponse;
@@ -54,6 +55,10 @@ public class NearbyPlacesImpl implements NearbyPlacesService {
                 .retrieve()
                 .body(NearbySearchResponse.class);
 
-        return response != null && response.places() != null ? response.places() : List.of();
+        if (response == null || response.places() == null){
+            throw new PlacesNotFoundException("Could not find venues/places at the location (%.4f, %.4f) within radius %s".formatted(latitude,longitude,radiusMeters));
+        }
+
+        return response.places();
     }
 }
