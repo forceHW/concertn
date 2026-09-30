@@ -4,6 +4,7 @@ import com.concertn.localbands.domain.dtos.AIEventResponseDto;
 import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 import com.concertn.localbands.domain.entities.Band;
 import com.concertn.localbands.domain.entities.Event;
+import com.concertn.localbands.exceptions.VenueEventsException;
 import com.concertn.localbands.repositories.BandRepository;
 import com.concertn.localbands.repositories.EventRepository;
 import com.concertn.localbands.services.AiParseService;
@@ -37,6 +38,7 @@ public class EventsServiceImpl implements EventsService {
                 aiParseService::ParseByPlace
         ).toList();
 
+
         //TODO: exception handling here: when the returned nested var "events" is null
 
         List<Event> allEvents = events.stream().flatMap(
@@ -44,7 +46,7 @@ public class EventsServiceImpl implements EventsService {
                     //what do i want to do with all the events in one place?
 
                     //TODO: exception handling for when a dto is null and or list<dto> is null?
-                    return eventsOfPlace.stream().map(eventToAdd -> {
+                    if (eventsOfPlace != null) return eventsOfPlace.stream().map(eventToAdd -> {
                         //what do i want to do with a event
                         //lookup/create for all the given bands (each dto has a list of artists)
                         List<Band> bandsToAdd = eventToAdd.getBandName().stream().map(newBand -> {   // This creates all the bands in a event dto
@@ -59,6 +61,11 @@ public class EventsServiceImpl implements EventsService {
 
 
                     );
+                    else{
+                        //this else will occur when a list<eventdto> is null -> which means that the ai returned null/nothing for this specific venue/place
+                        //TODO: consider redundancy as AI also has the option to throw an exception when they cant return a list of eventsDTO
+                        throw new VenueEventsException("Ai returned null on a placedto");
+                    }
                 }
 
 

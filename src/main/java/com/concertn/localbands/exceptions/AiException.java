@@ -1,25 +1,25 @@
 package com.concertn.localbands.exceptions;
 
 
-public class AiError extends ConcertException{
+public class AiException extends ConcertException{
 
-    public AiError(){
+    public AiException(){
 
     }
 
-    public AiError(String message){
+    public AiException(String message){
         super(message);
     }
 
-    public AiError(String message, Throwable cause){
+    public AiException(String message, Throwable cause){
         super(message, cause);
     }
 
-    public AiError(Throwable cause){
+    public AiException(Throwable cause){
         super(cause);
     }
 
-    public AiError(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace){
+    public AiException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace){
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

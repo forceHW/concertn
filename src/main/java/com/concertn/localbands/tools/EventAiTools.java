@@ -1,10 +1,9 @@
 package com.concertn.localbands.tools;
 
-import com.concertn.localbands.exceptions.AiError;
+import com.concertn.localbands.exceptions.AiException;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
@@ -70,6 +69,6 @@ public class EventAiTools {
 
     @Tool(description = "Throws an error")
     public void throwError(String error){
-        throw new AiError(error);
+        throw new AiException(error);
     }
 }
