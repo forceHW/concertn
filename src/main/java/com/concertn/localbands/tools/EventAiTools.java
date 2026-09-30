@@ -1,5 +1,6 @@
 package com.concertn.localbands.tools;
 
+import com.concertn.localbands.exceptions.AiError;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -65,5 +66,10 @@ public class EventAiTools {
                 .filter(href -> !href.isBlank())
                 .distinct()
                 .toList();
+    }
+
+    @Tool(description = "Throws an error")
+    public void throwError(String error){
+        throw new AiError(error);
     }
 }

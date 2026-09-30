@@ -50,6 +50,5 @@ public class AiParseServiceImpl implements AiParseService {
                 .advisors(new SimpleLoggerAdvisor()) // used to debug, see what ai is up to
                 .call()
                 .entity(new ParameterizedTypeReference<List<AIEventResponseDto>>() {});
-
     }
 }

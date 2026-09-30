@@ -10,6 +10,7 @@ Tools:
 fetchJsoupDocument: A jsoup tool that returns a Jsoup Document object, use it for the other tool arguments
 fetchStringDump: Dumps the body of a page to you
 fetchPaths: Provides a list of stings that are paths taken from the website/document, use this when the document string dump doesnt provide information
+throwError: Throws an error for debugging purposes
 
 
 
@@ -26,4 +27,4 @@ Rules:
 
 If you fail to find the events or cannot find it within the given string dump/document:
 - You may use the tools provided to look through the website paths to find an event page
-- You may do this up to 4 times, if you fail on the 4th attempt please return an null DTO
+- You may do this up to 4 times, if you fail on the 4th attempt please return an null DTO and throw an error with a appropriate message using the throwerror tool
