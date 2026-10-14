@@ -7,6 +7,7 @@ import com.concertn.localbands.services.AiParseService;
 import com.concertn.localbands.services.EventsService;
 import com.concertn.localbands.services.NearbyPlacesService;
 import com.concertn.localbands.services.impl.EventsServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
+@Slf4j
 class LocalbandsApplicationTests {
 
 	@Autowired
@@ -42,22 +44,24 @@ class LocalbandsApplicationTests {
 	}
 
 
-	@Test
-	void googleAndLuna(){
-//		used to test the ai
-		List<NearbySearchResponse.Place> places = nearbyPlacesService.findNearbyVenues(39.298163, -76.600091,35000);
-
-		NearbySearchResponse.Place argAi = places.get(1);
-
-		List<AIEventResponseDto> resp = aiParseService.ParseByPlace(argAi);
-		System.out.println("GP + Luna " + resp);
-		assertNotNull(resp);
-	}
-
-
+//	@Test
+//	void googleAndLuna(){
+////		used to test the ai
+//		List<NearbySearchResponse.Place> places = nearbyPlacesService.findNearbyVenues(39.298163, -76.600091,35000);
+//
+////		NearbySearchResponse.Place argAi = places.get(1);
+//		log.debug("places returened are...." + places);
+//		List<List<AIEventResponseDto>> resp = places.stream().map(
+//				aiParseService::ParseByPlace
+//		).toList();
+//		System.out.println("GP + Luna " + resp);
+//		assertNotNull(resp);
+//	}
+//
+//
 	@Test
 	void testEventsServiceFetchEvents(){
-		Page<Event> resp = eventsService.fetchEventsByLocation(39.298163, -76.600091, 35000);
+		Page<Event> resp = eventsService.fetchEventsByLocation(39.298163, -76.600091, 16000);
 
 		assertNotNull(resp);
 	}

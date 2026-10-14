@@ -22,10 +22,10 @@ public class Band {
     @Column(name="id",nullable = false,updatable = false)
     private UUID id;
 
-    @Column(name="band_name",nullable = false)
+    @Column(name="band_name")
     private String band_name;
 
-    @Column(name="normalized_name",nullable = false)
+    @Column(name="normalized_name")
     private String normalizedName;
 
     //TODO: how do we add images for s3?

@@ -12,15 +12,20 @@ import com.concertn.localbands.services.EventsService;
 import com.concertn.localbands.services.NearbyPlacesService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventsServiceImpl implements EventsService {
 
     private final AiParseService aiParseService;
@@ -32,6 +37,11 @@ public class EventsServiceImpl implements EventsService {
     @Transactional
     public Page<Event> fetchEventsByLocation(double latitude, double longitude, double radiusMeters) {
         List<NearbySearchResponse.Place> places = nearbyPlacesService.findNearbyVenues(latitude,longitude,radiusMeters);
+
+
+        places = places.stream().filter(this::hasUsableData).toList();
+
+//        log.debug("places after filter: {}", places);
 
 //      scrape through every given website - return all events
         List<List<AIEventResponseDto>> events = places.stream().map(
@@ -46,15 +56,25 @@ public class EventsServiceImpl implements EventsService {
                     //what do i want to do with all the events in one place?
 
                     //TODO: exception handling for when a dto is null and or list<dto> is null?
-                    if (eventsOfPlace != null) return eventsOfPlace.stream().map(eventToAdd -> {
+                    if (eventsOfPlace != null && !eventsOfPlace.isEmpty()) return eventsOfPlace.stream().filter(eventCheckArgs ->
+                            eventCheckArgs != null && eventCheckArgs.getEventName() != null && !eventCheckArgs.getEventName().isBlank()
+                            ).map(eventToAdd -> {
                         //what do i want to do with a event
-                        //lookup/create for all the given bands (each dto has a list of artists)
-                        List<Band> bandsToAdd = eventToAdd.getBandName().stream().map(newBand -> {   // This creates all the bands in a event dto
-                                    Optional<Band> getBand = bandRepository.findByNormalizedName(normalizeText(newBand));
-                                    return Optional.of(getBand).orElseThrow().orElse(createBand(newBand, eventToAdd));
-                                }
+                        //lookup/create for all the given bands (each dto has a list of artists
 
-                        ).toList();
+
+                        List<Band> bandsToAdd;
+                        if ( eventToAdd.getBandName() != null && !eventToAdd.getBandName().isEmpty()) {  //if there is specified bands, lets add them to our db, otherwise just pass it in events as null
+                                bandsToAdd = eventToAdd.getBandName().stream().map(newBand -> {   // This creates all the bands in a event dto
+                                        Optional<Band> getBand = bandRepository.findByNormalizedName(normalizeText(newBand));
+                                        return getBand.orElseGet(() -> createBand(newBand, eventToAdd));
+                                    }
+
+                            ).toList();
+                        }
+                        else {
+                            bandsToAdd = new ArrayList<>();
+                        }
                         //now create the event
                         return createEvent(eventToAdd,bandsToAdd,latitude,longitude);
                             }
@@ -63,15 +83,15 @@ public class EventsServiceImpl implements EventsService {
                     );
                     else{
                         //this else will occur when a list<eventdto> is null -> which means that the ai returned null/nothing for this specific venue/place
-                        //TODO: consider redundancy as AI also has the option to throw an exception when they cant return a list of eventsDTO
-                        throw new VenueEventsException("Ai returned null on a placedto");
+                        log.warn("AI returned no events for a venue, skipping");
+                        return Stream.empty();
                     }
                 }
 
 
         ).toList();
-
-        return new PageImpl<>(allEvents);
+//        return null;
+      return new PageImpl<>(allEvents);
     }
 
     private Event createEvent(AIEventResponseDto aiEventResponseDto, List<Band> bands, double latitude, double longitude){
@@ -110,5 +130,19 @@ public class EventsServiceImpl implements EventsService {
      */
     private String normalizeText(String text){
         return text.toLowerCase().replaceAll("\\s+", "");
+    }
+
+    /**
+     * used to filter responses from Google places api, places with no name or website uri shouldnt be passed into our ai parser
+     * we check to see if there is a valid name and website
+     * @param place
+     * @return
+     */
+    private boolean hasUsableData(NearbySearchResponse.Place place) {
+        return place.displayName() != null
+                && place.displayName().text() != null
+                && !place.displayName().text().isBlank()
+                && place.websiteUri() != null
+                && !place.websiteUri().isBlank();
     }
 }
