@@ -30,12 +30,7 @@ public class Band {
 
     //TODO: how do we add images for s3?
 
-    @ManyToMany
-    @JoinTable(
-            name = "band_events",
-            joinColumns = @JoinColumn(name = "band_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id")
-    )
+    @ManyToMany(mappedBy = "bands")
     @Builder.Default
     private List<Event> events = new ArrayList<>();
 

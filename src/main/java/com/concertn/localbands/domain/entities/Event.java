@@ -25,7 +25,13 @@ public class Event {
     @Column(name = "name", nullable = false)
     private String event_name;
 
-    @ManyToMany(mappedBy = "events")
+//    @ManyToMany(mappedBy = "events")
+    @ManyToMany
+    @JoinTable(
+            name = "band_events",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "band_id")
+    )
     @Builder.Default
     private List<Band> bands = new ArrayList<>();
 
