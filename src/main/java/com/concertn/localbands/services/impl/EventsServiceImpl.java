@@ -4,7 +4,7 @@ import com.concertn.localbands.domain.dtos.AIEventResponseDto;
 import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 import com.concertn.localbands.domain.entities.Band;
 import com.concertn.localbands.domain.entities.Event;
-import com.concertn.localbands.exceptions.VenueEventsException;
+import com.concertn.localbands.domain.getEventsByLocation;
 import com.concertn.localbands.repositories.BandRepository;
 import com.concertn.localbands.repositories.EventRepository;
 import com.concertn.localbands.services.AiParseService;
@@ -35,7 +35,12 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     @Transactional
-    public Page<Event> fetchEventsByLocation(double latitude, double longitude, double radiusMeters) {
+    public Page<Event> fetchEventsByLocation(getEventsByLocation getEventsDetails) {
+        double latitude = getEventsDetails.getLatitude();
+        double longitude = getEventsDetails.getLongitude();
+        double radiusMeters = getEventsDetails.getRadiusMeters();
+
+
         List<NearbySearchResponse.Place> places = nearbyPlacesService.findNearbyVenues(latitude,longitude,radiusMeters);
 
 

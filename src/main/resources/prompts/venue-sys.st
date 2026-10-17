@@ -23,3 +23,4 @@ Rules:
 If you fail to find the events or cannot find it within the given string dump/document:
 - You may use the list of strings witch the provide the website paths to find the appropriate events page
 - You may do this up to 4 times, if you fail on the 4th attempt please return an null DTO and throw an error with a appropriate message using the throwerror tool
+- Additionally, if you fail to find the either the event name or date of event return a null DTO and throw an error with a appropriate message using the throwerror tool

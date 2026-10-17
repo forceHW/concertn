@@ -1,12 +1,11 @@
 package com.concertn.localbands;
 
-import com.concertn.localbands.domain.dtos.AIEventResponseDto;
 import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 import com.concertn.localbands.domain.entities.Event;
+import com.concertn.localbands.domain.getEventsByLocation;
 import com.concertn.localbands.services.AiParseService;
 import com.concertn.localbands.services.EventsService;
 import com.concertn.localbands.services.NearbyPlacesService;
-import com.concertn.localbands.services.impl.EventsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +60,8 @@ class LocalbandsApplicationTests {
 //
 	@Test
 	void testEventsServiceFetchEvents(){
-		Page<Event> resp = eventsService.fetchEventsByLocation(39.298163, -76.600091, 16000);
+		getEventsByLocation locationDetails = new getEventsByLocation(39.298163, -76.600091, 16000);
+		Page<Event> resp = eventsService.fetchEventsByLocation(locationDetails);
 
 		assertNotNull(resp);
 	}
