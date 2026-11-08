@@ -1,6 +1,7 @@
 package com.concertn.localbands.services.impl;
 
 import com.concertn.localbands.domain.dtos.AIEventResponseDto;
+import com.concertn.localbands.domain.dtos.AIEventResponseWithLatLongDto;
 import com.concertn.localbands.domain.dtos.NearbySearchResponse;
 import com.concertn.localbands.domain.entities.Band;
 import com.concertn.localbands.domain.entities.Event;
@@ -41,7 +42,7 @@ public class EventsServiceImpl implements EventsService {
         double radiusMeters = getEventsDetails.getRadiusMeters();
 
 
-        List<NearbySearchResponse.Place> places = nearbyPlacesService.findNearbyVenues(latitude,longitude,radiusMeters);
+        List<NearbySearchResponse.Place> places = nearbyPlacesService.findNearbyVenues(latitude, longitude, radiusMeters);
 
 
         places = places.stream().filter(this::hasUsableData).toList();
@@ -49,69 +50,94 @@ public class EventsServiceImpl implements EventsService {
 //        log.debug("places after filter: {}", places);
 
 //      scrape through every given website - return all events
-        List<List<AIEventResponseDto>> events = places.stream().map(
-                aiParseService::ParseByPlace
-        ).toList();
-
-
-        //TODO: exception handling here: when the returned nested var "events" is null
-
-        List<Event> allEvents = events.stream().flatMap(
-                eventsOfPlace -> {
-                    //what do i want to do with all the events in one place?
-
-                    //TODO: exception handling for when a dto is null and or list<dto> is null?
-                    if (eventsOfPlace != null && !eventsOfPlace.isEmpty()) return eventsOfPlace.stream().filter(eventCheckArgs ->
-                            eventCheckArgs != null && eventCheckArgs.getEventName() != null && !eventCheckArgs.getEventName().isBlank()
-                            ).map(eventToAdd -> {
-                        //what do i want to do with a event
-                        //lookup/create for all the given bands (each dto has a list of artists
-
-
-                        List<Band> bandsToAdd;
-                        if ( eventToAdd.getBandName() != null && !eventToAdd.getBandName().isEmpty()) {  //if there is specified bands, lets add them to our db, otherwise just pass it in events as null
-                                bandsToAdd = eventToAdd.getBandName().stream().map(newBand -> {   // This creates all the bands in a event dto
-                                        Optional<Band> getBand = bandRepository.findByNormalizedName(normalizeText(newBand));
-                                        return getBand.orElseGet(() -> createBand(newBand, eventToAdd));
-                                    }
-
-                            ).toList();
-                        }
-                        else {
-                            bandsToAdd = new ArrayList<>();
-                        }
-                        //now create the event
-                        return createEvent(eventToAdd,bandsToAdd,latitude,longitude);
-                            }
-
-
-                    );
-                    else{
-                        //this else will occur when a list<eventdto> is null -> which means that the ai returned null/nothing for this specific venue/place
-                        log.warn("AI returned no events for a venue, skipping");
-                        return Stream.empty();
-                    }
+        List<Event> events = places.stream().flatMap(place -> {
+            List<AIEventResponseDto> parsedEventofPlace = aiParseService.ParseByPlace(place);
+//
+            if (parsedEventofPlace == null || parsedEventofPlace.isEmpty()) {
+                log.info("AI returned null/empty dto for the place {}", place.displayName().text());
+                return Stream.empty();
+            }
+//
+//
+            List<Event> toEventsofPlace = parsedEventofPlace.stream().filter(eventdto ->
+                    eventdto != null && eventdto.getEventName() != null && !eventdto.getEventName().isBlank()
+            ).map(eventdto -> {
+                List<Band> bandsToAdd;
+                if (eventdto.getBandName() != null && !eventdto.getBandName().isEmpty()) {
+                    bandsToAdd = eventdto.getBandName().stream().map(newBand -> {
+                        Optional<Band> getBand = bandRepository.findByNormalizedName(normalizeText(newBand));
+                        return getBand.orElseGet(() -> createBand(newBand, eventdto));
+                    }).toList();
+                } else {
+                    bandsToAdd = new ArrayList<>();
                 }
 
-
-        ).toList();
-//        return null;
-      return new PageImpl<>(allEvents);
+                return createEvent(eventdto, bandsToAdd, place.formattedAddress(), place.location().latitude(), place.location().longitude());
+            }).toList();
+//
+//
+            return toEventsofPlace.stream();
+        }).toList();
+        return new PageImpl<>(events);
     }
 
-    private Event createEvent(AIEventResponseDto aiEventResponseDto, List<Band> bands, double latitude, double longitude){
+
+//        List<Event> allEvents = events.stream().flatMap(
+//                eventsOfPlace -> {
+//                    //what do i want to do with all the events in one place?
+//
+//                    //TODO: exception handling for when a dto is null and or list<dto> is null?
+//                    if (eventsOfPlace != null && !eventsOfPlace.isEmpty()) return eventsOfPlace.stream().filter(eventCheckArgs ->
+//                            eventCheckArgs != null && eventCheckArgs.getEventName() != null && !eventCheckArgs.getEventName().isBlank()
+//                            ).map(eventToAdd -> {
+//                        //what do i want to do with a event
+//                        //lookup/create for all the given bands (each dto has a list of artists
+//
+//
+//                        List<Band> bandsToAdd;
+//                        if ( eventToAdd.getBandName() != null && !eventToAdd.getBandName().isEmpty()) {  //if there is specified bands, lets add them to our db, otherwise just pass it in events as null
+//                                bandsToAdd = eventToAdd.getBandName().stream().map(newBand -> {   // This creates all the bands in a event dto
+//                                        Optional<Band> getBand = bandRepository.findByNormalizedName(normalizeText(newBand));
+//                                        return getBand.orElseGet(() -> createBand(newBand, eventToAdd));
+//                                    }
+//
+//                            ).toList();
+//                        }
+//                        else {
+//                            bandsToAdd = new ArrayList<>();
+//                        }
+//                        //now create the event
+//                        return createEvent(eventToAdd,bandsToAdd,latitude,longitude);
+//                            }
+//
+//
+//                    );
+//                    else{
+//                        //this else will occur when a list<eventdto> is null -> which means that the ai returned null/nothing for this specific venue/place
+//                        log.warn("AI returned no events for a venue, skipping");
+//                        return Stream.empty();
+//                    }
+//                }
+//
+//
+//        ).toList();
+////        return null;
+//      return new PageImpl<>(allEvents);
+//    }
+
+    private Event createEvent(AIEventResponseDto aiEventResponseDto, List<Band> bands, String formattedAddress, double latitude, double longitude){
         Event event = Event.builder()
                 .event_name(aiEventResponseDto.getEventName())
                 .bands(bands)
                 .latitude(latitude)
                 .longitude(longitude)
-//                TODO: Formated Address?
+                .formattedAddress(formattedAddress)
 //                TODO: Image S3?
                 .date(aiEventResponseDto.getDate())
                 .doorsOpen(aiEventResponseDto.getDoorsOpen())
 
 
-                                .build();
+                .build();
 
         return eventRepository.save(event);
     }
