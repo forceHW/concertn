@@ -6,6 +6,5 @@ import org.springframework.data.domain.Page;
 
 public interface EventsService {
 
-
     Page<Event> fetchEventsByLocation(getEventsByLocation eventRequestDetails);
 }
